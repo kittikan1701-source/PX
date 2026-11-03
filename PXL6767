@@ -1,0 +1,128 @@
+-- [[ Fisch Helper Script - Educational / Concept Example ]] --
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "🎣 Fisch Script - Main Hub",
+   LoadingTitle = "Fisch Auto System",
+   LoadingSubtitle = "by Assistant",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "FischConfig"
+   },
+   Discord = {
+      Enabled = false
+   },
+   KeySystem = false
+})
+
+-- Variables / Toggle States
+local AutoCast = false
+local AutoReel = false
+local AutoSell = false
+
+-- Tabs
+local MainTab = Window:CreateTab("Main Features", 4483362458)
+local TeleportTab = Window:CreateTab("Teleports", 4483362458)
+
+-- Section: Auto Fishing
+MainTab:CreateSection("Auto Fishing System")
+
+MainTab:CreateToggle({
+   Name = "Auto Cast Rod (เหวี่ยงเบ็ดออโต้)",
+   CurrentValue = false,
+   Flag = "ToggleAutoCast",
+   Callback = function(Value)
+      AutoCast = Value
+      task.spawn(function()
+         while AutoCast do
+            task.wait(1)
+            -- จำลองการกดเหวี่ยงเบ็ดลงน้ำ
+            local character = game.Players.LocalPlayer.Character
+            if character then
+               local tool = character:FindFirstChildOfClass("Tool")
+               if tool and tool:FindFirstChild("events") then
+                  -- เรียก Event สำหรับ Cast (ปรับเปลี่ยนตามโครงสร้างของเกม)
+                  pcall(function()
+                     tool.events.cast:FireServer(100) -- ตัวอย่างความแรงการเหวี่ยง
+                  end)
+               end
+            end
+         end
+      end)
+   end,
+})
+
+MainTab:CreateToggle({
+   Name = "Auto Reel (ดึงสายออโต้)",
+   CurrentValue = false,
+   Flag = "ToggleAutoReel",
+   Callback = function(Value)
+      AutoReel = Value
+      task.spawn(function()
+         while AutoReel do
+            task.wait(0.2)
+            -- สแกนหา Minigame หรือ Event ดึงสายออโต้
+            local gui = game.Players.LocalPlayer.PlayerGui
+            if gui:FindFirstChild("reel") or gui:FindFirstChild("Reel") then
+               pcall(function()
+                  -- ส่งสัญญาณดึงสายเบ็ดสำเร็จไปยังเซิร์ฟเวอร์
+                  game:GetService("ReplicatedStorage").events.reelfinished:FireServer(100, true)
+               end)
+            end
+         end
+      end)
+   end,
+})
+
+-- Section: Auto Sell
+MainTab:CreateSection("Auto Sell System")
+
+MainTab:CreateToggle({
+   Name = "Auto Sell Fish (ขายปลาออโต้)",
+   CurrentValue = false,
+   Flag = "ToggleAutoSell",
+   Callback = function(Value)
+      AutoSell = Value
+      task.spawn(function()
+         while AutoSell do
+            task.wait(5)
+            -- เรียกฟังก์ชันขายปลา (Merchant NPC Event)
+            pcall(function()
+               game:GetService("ReplicatedStorage").events.SellAll:InvokeServer()
+            end)
+         end
+      end)
+   end,
+})
+
+-- Teleport Options
+TeleportTab:CreateSection("เกาะต่างๆ (Islands)")
+
+TeleportTab:CreateButton({
+   Name = "Teleport to Moosewood (เกาะเริ่มต้น)",
+   Callback = function()
+      local player = game.Players.LocalPlayer
+      if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+         player.Character.HumanoidRootPart.CFrame = CFrame.new(380, 135, 230) -- ตัวอย่างพิกัด
+      end
+   end,
+})
+
+TeleportTab:CreateButton({
+   Name = "Teleport to Roslit Bay",
+   Callback = function()
+      local player = game.Players.LocalPlayer
+      if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+         player.Character.HumanoidRootPart.CFrame = CFrame.new(-1480, 130, 710) -- ตัวอย่างพิกัด
+      end
+   end,
+})
+
+Rayfield:Notify({
+   Title = "สคริปต์โหลดสำเร็จ!",
+   Content = "ใช้งานด้วยความระมัดระวัง",
+   Duration = 5,
+   Image = 4483362458,
+})
